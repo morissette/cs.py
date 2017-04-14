@@ -26,9 +26,11 @@ def checksite(domain):
         conn.request('HEAD', '/')
         response = conn.getresponse()
         if options.verbose and response.status < 400:
-            print '%-50s %-1s %-1s' % (domain, response.status, response.reason)
+            print '%-50s %-1s %-1s' % \
+                (domain, response.status, response.reason)
         elif response.status > 400:
-            print '%-50s %-1s %-1s' % (domain, response.status, response.reason)
+            print '%-50s %-1s %-1s' % \
+                (domain, response.status, response.reason)
     except (httplib.HTTPException, socket.error) as ex:
         print '%-50s %-5s' % (domain, ex)
 
@@ -106,74 +108,71 @@ def checkuser(user):
         file_handle.close()
         for domain in domains:
             checksite(domain)
-    except:
+    except OSError:
         print "User does not exist"
 
-"""
-Options Parsing and Help
-"""
-parser = OptionParser()
-parser.add_option(
-    "-w",
-    "--working",
-    action="store_true",
-    dest="verbose",
-    help="shows domains that return a status between 200 and 399"
-)
+if __name__ == '__main__':
+    parser = OptionParser()
+    parser.add_option(
+        "-w",
+        "--working",
+        action="store_true",
+        dest="verbose",
+        help="shows domains that return a status between 200 and 399"
+    )
 
-parser.add_option(
-    "-v",
-    "--verbose",
-    action="store_true",
-    dest="verbose",
-    help="shows domains that return a status between 200 and 399 [DEPRECATED by -w]"
-)
+    parser.add_option(
+        "-v",
+        "--verbose",
+        action="store_true",
+        dest="verbose",
+        help="shows domains that return a status between 200 and 399"
+    )
 
-parser.add_option(
-    "-c",
-    "--content-check",
-    action="store_true",
-    dest="content",
-    help="checks content for common errors"
-)
+    parser.add_option(
+        "-c",
+        "--content-check",
+        action="store_true",
+        dest="content",
+        help="checks content for common errors"
+    )
 
-parser.add_option(
-    "-a",
-    "--all",
-    action="store_true",
-    dest="all",
-    help="checks all domains on the server for bad http statuses"
-)
+    parser.add_option(
+        "-a",
+        "--all",
+        action="store_true",
+        dest="all",
+        help="checks all domains on the server for bad http statuses"
+    )
 
-parser.add_option(
-    "-d",
-    "--domain",
-    action="store",
-    dest="domain",
-    help="checks the status of the domain provided"
-)
+    parser.add_option(
+        "-d",
+        "--domain",
+        action="store",
+        dest="domain",
+        help="checks the status of the domain provided"
+    )
 
-parser.add_option(
-    "-u",
-    "--user",
-    action="store",
-    dest="user",
-    help="checks the status of the domains for the user provided"
-)
+    parser.add_option(
+        "-u",
+        "--user",
+        action="store",
+        dest="user",
+        help="checks the status of the domains for the user provided"
+    )
 
-global options
-(options, args) = parser.parse_args()
-print "\nCheckSites v2.0 by admin@mattharris.org"
-print "----------------------------------------------------------------------------------------"
-print "%-50s %-5s" % ("DOMAIN", "STATUS")
-sys.stdout.flush()
-if options.domain:
-    checksite(options.domain)
-if options.all:
-    checkall()
-if options.user:
-    if os.path.isdir("/usr/local/cpanel"):
-        checkuser(options.user)
-    else:
-        print "This option only works on cPanel"
-        print "\n"
+    (options, args) = parser.parse_args()
+    print "\nCheckSites v2.0 by admin@mattharris.org"
+    print "------------------------------------------------------"
+    print "%-50s %-5s" % ("DOMAIN", "STATUS")
+    sys.stdout.flush()
+    if options.domain:
+        checksite(options.domain)
+    if options.all:
+        checkall()
+    if options.user:
+        if os.path.isdir("/usr/local/cpanel"):
+            checkuser(options.user)
+        else:
+            print "This option only works on cPanel"
+            print "\n"
